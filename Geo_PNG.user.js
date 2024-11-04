@@ -2,7 +2,7 @@
 // @name         WME Link to Geoportal Papua New Guinea
 // @description  Adds buttons to Waze Map Editor to open the Geoportal of Papua New Guinea.
 // @namespace    https://github.com/Dwinger2006/Geo_PNG
-// @version      2024.11.04.01
+// @version      2024.11.04.02
 // @include      https://*.waze.com/editor*
 // @include      https://*.waze.com/*editor*
 // @grant        none
@@ -13,43 +13,44 @@
 // @updateURL    https://update.greasyfork.org/scripts/510495/WME%20Link%20to%20Geoportal%20Luxembourg%20and%20Traffic%20Info.meta.js
 // ==/UserScript==
 
-var PNGGeo_version = '2024.11.04.01';
+var PNGGeo_version = '2024.11.04.02';
 
-(async function() {
+(function() {
     'use strict';
 
-    // Reference for the Geoportal window
+    // Referenz für das Geoportal-Fenster
     let geoportalWindow = null;
 
-    // Initialize buttons once WME is ready
+    // Initialisiere die Schaltfläche, sobald WME bereit ist
     function initialize() {
-        if (typeof W !== 'undefined' && W.userscripts && W.userscripts.state.isReady) {
-            addButtons();
+        if (typeof W !== 'undefined' && W.map && W.loginManager && W.loginManager.user) {
+            addButton();
         } else {
-            console.log("WME is not ready yet, retrying...");
-            document.addEventListener("wme-ready", initialize, { once: true });
+            console.log("WME ist noch nicht bereit, versuche es erneut...");
+            setTimeout(initialize, 1000);
         }
     }
 
-    // Function to create the button for Geoportal Papua New Guinea
+    // Funktion zum Erstellen der Schaltfläche für das Geoportal Papua-Neuguinea
     function createPNGButton() {
-        console.log("Creating Geoportal Papua New Guinea button");
+        console.log("Erstelle Schaltfläche für Geoportal Papua-Neuguinea");
         var png_btn = document.createElement('button');
-        png_btn.style = "width: 285px;height: 24px; font-size:85%;color: green;border-radius: 5px;border: 0.5px solid lightgrey; background: white; margin-bottom: 10px;";
+        png_btn.style = "width: 285px; height: 24px; font-size: 85%; color: green; border-radius: 5px; border: 0.5px solid lightgrey; background: white; margin-bottom: 10px;";
         png_btn.innerHTML = "Geoportal Papua-Neuguinea";
 
         png_btn.addEventListener('click', function() {
             if (W.map) {
-                let coords = W.map.getUnvalidatedUnprojectedCenter();
-                let point = new OpenLayers.LonLat(coords.lon, coords.lat);
-                let transformed = point.transform('EPSG:3857', 'EPSG:4326'); // Transformation to WGS 84
+                let center = W.map.getCenter();
+                let zoom = W.map.getZoom();
+                let lat = center.lat;
+                let lon = center.lon;
 
-                // Construct the URL for Papua New Guinea Geoportal
-                var mapsUrl = 'https://png-geoportal.org/catalogue/#/map/111?lat=' + transformed.lat + '&lon=' + transformed.lon + '&zoom=' + W.map.getZoom();
+                // Konstruiere die URL für das Geoportal mit den aktuellen Koordinaten und Zoom-Level
+                var mapsUrl = `https://png-geoportal.org/catalogue/#/map/111?lat=${lat}&lon=${lon}&zoom=${zoom}`;
 
-                console.log("Geoportal URL:", mapsUrl);
+                console.log("Geoportal-URL:", mapsUrl);
 
-                // Open or focus the Geoportal window
+                // Öffne oder fokussiere das Geoportal-Fenster
                 if (geoportalWindow && !geoportalWindow.closed) {
                     geoportalWindow.location.href = mapsUrl;
                     geoportalWindow.focus();
@@ -57,35 +58,29 @@ var PNGGeo_version = '2024.11.04.01';
                     geoportalWindow = window.open(mapsUrl, 'geoportalPNG');
                 }
             } else {
-                console.error("W.map is not available.");
+                console.error("W.map ist nicht verfügbar.");
             }
         });
 
         return png_btn;
     }
 
-    // Function to add buttons to the WME side panel
-    function addButtons() {
-        console.log("Adding buttons...");
+    // Funktion zum Hinzufügen der Schaltfläche zum WME-Seitenpanel
+    function addButton() {
+        console.log("Füge Schaltfläche hinzu...");
 
-        if (!W.userscripts.state.isReady) {
-            console.log("WME is not ready yet, retrying...");
-            document.addEventListener("wme-ready", addButtons, { once: true });
-            return;
-        }
-
-        // Check if the panel already exists to avoid duplicate entries
+        // Überprüfe, ob das Panel bereits existiert, um doppelte Einträge zu vermeiden
         if (document.getElementById("sidepanel-png") !== null) {
-            console.log("Buttons already exist.");
+            console.log("Schaltfläche existiert bereits.");
             return;
         }
 
         var addon = document.createElement('section');
         addon.id = "png-addon";
         addon.innerHTML = `
-        <b><p style="font-family:verdana,sans-serif; font-size:12px; text-decoration: none;">
+        <b><p style="font-family: verdana, sans-serif; font-size: 12px; text-decoration: none;">
         <a href="https://greasyfork.org/de/scripts/510495-wme-link-to-geoportal-luxembourg-and-traffic-info" target="_blank">
-        <b>Links to PNG Geoportal </b>v ${PNGGeo_version}</a></p>`;
+        <b>Link zum PNG Geoportal</b> v${PNGGeo_version}</a></p>`;
 
         var userTabs = document.getElementById('user-info');
         var navTabs = userTabs?.getElementsByClassName('nav-tabs')[0];
@@ -107,13 +102,13 @@ var PNGGeo_version = '2024.11.04.01';
 
             addon.appendChild(pngButton);
 
-            console.log("Buttons added successfully.");
+            console.log("Schaltfläche erfolgreich hinzugefügt.");
         } else {
-            console.error("Could not find user info panel to add buttons.");
+            console.error("Konnte das Benutzerinformationspanel nicht finden, um die Schaltfläche hinzuzufügen.");
         }
     }
 
-    // Initialize the script
+    // Initialisiere das Skript
     initialize();
 
 })();
