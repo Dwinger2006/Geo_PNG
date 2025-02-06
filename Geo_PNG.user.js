@@ -13,7 +13,7 @@
 // @updateURL    https://update.greasyfork.org/scripts/510495/WME%20Link%20to%20Geoportal%20Luxembourg%20and%20Traffic%20Info.meta.js
 // ==/UserScript==
 
-var PNGGeo_version = '2024.11.04.02';
+var PNGGeo_version = '2005.02.06.01';
 
 (function() {
     'use strict';
