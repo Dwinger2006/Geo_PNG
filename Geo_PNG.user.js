@@ -2,7 +2,7 @@
 // @name         WME Link to Geoportal Papua New Guinea
 // @description  Adds buttons to Waze Map Editor to open the Geoportal of Papua New Guinea.
 // @namespace    https://github.com/Dwinger2006/Geo_PNG
-// @version      2024.11.04.02
+// @version      2025.02.06.01
 // @include      https://*.waze.com/editor*
 // @include      https://*.waze.com/*editor*
 // @grant        none
@@ -79,7 +79,7 @@ var PNGGeo_version = '2024.11.04.02';
         addon.id = "png-addon";
         addon.innerHTML = `
         <b><p style="font-family: verdana, sans-serif; font-size: 12px; text-decoration: none;">
-        <a href="https://greasyfork.org/de/scripts/510495-wme-link-to-geoportal-luxembourg-and-traffic-info" target="_blank">
+        <a href="https://greasyfork.org/de/scripts/526129-wme-link-to-geoportal-papua-new-guinea" target="_blank">
         <b>Link zum PNG Geoportal</b> v${PNGGeo_version}</a></p>`;
 
         var userTabs = document.getElementById('user-info');
